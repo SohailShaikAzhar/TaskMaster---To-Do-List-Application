@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional Application">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <title>{% block title %}App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <a href="/" class="logo-link">
+                    <span class="logo-icon">🔹</span>
+                    <span class="logo-text">App</span>
+                </a>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                {# <div class="nav-item"><a href="{{ url_for('login') }}">Home</a></div> #}
+                {% if current_user.is_authenticated %}
+                    <div class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link">Profile</a></div>
+                    <div class="nav-item"><a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a></div>
+                    <div class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link logout-link">Logout</a></div>
+                {% else %}
+                    <div class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></div>
+                    <div class="nav-item"><a href="{{ url_for('home') }}" class="nav-link btn-primary">Sign Up</a></div>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash-message flash-{{ category or 'info' }}">
+                <div class="flash-content">
+                    {% if category == 'success' %}
+                        <span class="flash-icon">✓</span>
+                    {% elif category == 'error' %}
+                        <span class="flash-icon">!</span>
+                    {% elif category == 'warning' %}
+                        <span class="flash-icon">⚠</span>
+                    {% else %}
+                        <span class="flash-icon">ℹ</span>
+                    {% endif %}
+                    <span class="flash-text">{{ message }}</span>
+                </div>
+                <button class="flash-close" aria-label="Close">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span class="logo-text">App</span>
+            </div>
+            <div class="footer-text">
+                <p>&copy; {{ now.year if now else '2024' }} App. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
