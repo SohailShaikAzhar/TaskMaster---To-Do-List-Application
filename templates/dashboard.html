@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Welcome back, {{ current_user.name }}</h1>
+            <p>Manage your tasks efficiently and stay productive</p>
+        </div>
+        
+        <div class="task-body">
+            <div class="task-body-div">
+                <div class="task-data">
+                    <h2>Add New Task</h2>
+                    <form action="" method="POST">
+                        <div class="task-data-ele">
+                            <label for="task_name">Task Name</label>
+                            <input type="text" name="task_name" id="task_name" placeholder="Enter task name" required>
+                        </div>
+                        
+                        <div class="task-data-ele">
+                            <label for="task_desc">Task Description</label>
+                            <textarea name="task_desc" id="task_desc" placeholder="Describe your task in detail" required></textarea>
+                        </div>
+                        
+                        <div class="task-date-ele">
+                            <label for="com_date">Complete within</label>
+                            <input type="datetime-local" name="com_date" id="com_date" min="{{ today_date }}" required>
+                        </div>
+                        
+                        <div class="task-date-ele">
+                            <label for="prio">Priority</label>
+                            <select name="prio" id="prio" required>
+                                <option value="" disabled selected>Select priority</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <div class="task-date-ele">
+                            <label for="cato">Category</label>
+                            <select name="cato" id="cato" required>
+                                <option value="" disabled selected>Select category</option>
+                                <option value="personal">Personal</option>
+                                <option value="family">Family</option>
+                                <option value="office">Office</option>
+                                <option value="hobby">Hobby</option>
+                            </select>
+                        </div>
+                        
+                        <div class="task-date-ele">
+                            <input type="submit" value="Add Task">
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="tasks-grid">
+                    {% if tasks %}
+                        <div class="data-rep">
+                            <div class="data-rep-ele">Task Name</div>
+                            <div class="data-rep-ele">Description</div>
+                            <div class="data-rep-ele">Deadline</div>
+                            <div class="data-rep-ele">Priority</div>
+                            <div class="data-rep-ele">Category</div>
+                        </div>
+                        
+                        {% for df in tasks %}
+                        <div class="data-rep">
+                            <div class="data-rep-ele" data-label="Task">{{ df.task_name }}</div>
+                            <div class="data-rep-ele" data-label="Description">{{ df.task_desc[:50] }}{% if df.task_desc|length > 50 %}...{% endif %}</div>
+                            <div class="data-rep-ele" data-label="Deadline">{{ df.com_date }}</div>
+                            <div class="data-rep-ele" data-label="Priority" data-priority="{{ df.task_priority }}">{{ df.task_priority }}</div>
+                            <div class="data-rep-ele" data-label="Category">{{ df.category }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-tasks">
+                            <p>🎉 No tasks yet. Create your first task!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add priority badge styling
+        document.addEventListener('DOMContentLoaded', function() {
+            const priorityElements = document.querySelectorAll('[data-priority]');
+            
+            priorityElements.forEach(el => {
+                const priority = el.getAttribute('data-priority');
+                el.classList.add(`priority-${priority}`);
+            });
+            
+            // Format dates
+            const dateElements = document.querySelectorAll('[data-label="Deadline"]');
+            dateElements.forEach(el => {
+                const dateText = el.textContent;
+                if (dateText) {
+                    try {
+                        const date = new Date(dateText);
+                        el.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    } catch (e) {
+                        // Keep original format if parsing fails
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
